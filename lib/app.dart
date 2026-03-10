@@ -1,11 +1,52 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
+  @override
+  State<App> createState() => _AppState();
+}
+
+enum PomodoroState { green, red }
+
+class _AppState extends State<App> {
+  int seconds = 5;
+  Timer? timer;
+  var backgroundColor = Colors.green[50];
+  var state = PomodoroState.green;
+
+  void onTick(Timer _) {
+    if (seconds > 0)
+      setState(() => seconds--);
+    else {
+      setState(() {
+        seconds = 5;
+        if (state == PomodoroState.green) {
+          backgroundColor = Colors.red[50];
+          state = PomodoroState.red;
+        } else {
+          backgroundColor = Colors.green[50];
+          state = PomodoroState.green;
+        }
+      });
+    }
+  }
+
+  void add10Seconds() {
+    setState(() => seconds += 10);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    timer = Timer.periodic(Duration(seconds: 1), onTick);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Material(
-        color: Colors.green[50],
+        color: backgroundColor,
         child: SafeArea(
           child: Column(
             spacing: 32,
@@ -25,7 +66,7 @@ class App extends StatelessWidget {
                 ),
               ),
               Text(
-                "05\n00",
+                "05\n$seconds",
                 style: TextStyle(
                   fontSize: 256,
                   fontWeight: FontWeight.w400,
@@ -40,7 +81,7 @@ class App extends StatelessWidget {
                   InkWell(
                     borderRadius: BorderRadius.circular(32),
                     splashColor: Colors.green[100],
-                    onTap: () {},
+                    onTap: add10Seconds,
                     child: Container(
                       width: 80,
                       height: 80,
@@ -53,7 +94,7 @@ class App extends StatelessWidget {
                   ),
                   InkWell(
                     borderRadius: BorderRadius.circular(32),
-                    splashColor: Colors.green[100],
+                    splashColor: Colors.green[300],
                     onTap: () {},
                     child: Container(
                       width: 102,
